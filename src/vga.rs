@@ -12,20 +12,24 @@ pub mod symbol;
 pub const ROWS: usize = 25;
 pub const COLUMNS: usize = 80;
 
+/**
+ * A VGABuffer with double buffering support.
+ */
+
 pub struct VGABuffer
 {
-    pnt: *mut u8,
+    vga_buffer_ptr: *mut u8,
     buffer: MatrixFixed<SymbolVGA, ROWS, COLUMNS>,
     marker: usize
 }
 
 impl VGABuffer
 {
-    pub fn new(pnt: *mut u8) -> Self
+    pub fn new(vga_buffer_ptr: *mut u8) -> Self
     {
         Self
         {
-            pnt,
+            vga_buffer_ptr,
             buffer: MatrixFixed::repeat(SymbolVGA::new(' ' as u8, ColorVGA::Black)),
             marker: 0
         }
@@ -109,12 +113,12 @@ impl VGABuffer
         self.set_marker(self.marker_pos().0 + 1, 0);
     }
 
-    pub fn draw(&mut self)
+    pub fn render(&mut self)
     {
         for (i, &sym) in self.buffer.iter().enumerate() {
             unsafe {
-                *self.pnt.offset(i as isize * 2) = sym.char() as u8;
-                *self.pnt.offset(i as isize * 2 + 1) = sym.color() as u8;
+                *self.vga_buffer_ptr.offset(i as isize * 2) = sym.char() as u8;
+                *self.vga_buffer_ptr.offset(i as isize * 2 + 1) = sym.color() as u8;
             }
         }
     }
@@ -130,4 +134,18 @@ impl VGABufferWriter
     fn write_line() {
         
     }
+}
+
+#[macro_export]
+macro_rules! print {
+    ($($arg: tt)*) => {
+        vga::_print(format_args!($($arg)*));
+    }
+}
+
+pub fn _print(args: fmt::Arguments) {
+    let mut vga_buffer = VGABuffer::new(0xb8000 as *mut u8);
+    vga_buffer.put_text(&args.as_str().unwrap().as_bytes(), ColorVGA::White);
+    vga_buffer.new_line();
+    vga_buffer.render();
 }
