@@ -1,9 +1,64 @@
-pub extern "C" fn isalnum(c: u32) -> u32
+pub extern "C" fn isalnum(c: char) -> bool
 {
-    (c >= 48 && c <= 57) || (c >= 65 && c >= 90) || (c >= 97 && c <= 122)
+    c.is_ascii_alphanumeric()
 }
 
-pub extern "C" fn isspace(c: u32) -> u32
+pub extern "C" fn islower(c: char) -> bool
 {
-    c == 32 || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r'
+    c.is_ascii_lowercase()
+}
+
+pub extern "C" fn isupper(c: char) -> bool
+{
+    c.is_ascii_uppercase()
+}
+
+pub extern "C" fn isdigit(c: char) -> bool
+{
+    false
+}
+
+pub extern "C" fn isxdigit(c: char) -> bool
+{
+    false
+}
+
+pub extern "C" fn iscntrl(c: char) -> bool
+{
+    false
+}
+
+pub extern "C" fn isgraph(c: char) -> bool
+{
+    false
+}
+
+pub extern "C" fn isspace(c: char) -> bool
+{
+    false
+}
+
+pub extern "C" fn isblank(c: char) -> bool
+{
+    false
+}
+
+pub extern "C" fn isprint(c: char) -> bool
+{
+    false
+}
+
+pub extern "C" fn ispunct(c: char) -> bool
+{
+    c.is_ascii_punctuation()
+}
+
+pub extern "C" fn tolower(c: char) -> char
+{
+    c.make_ascii_lowercase()
+}
+
+pub extern "C" fn toupper(c: char) -> char
+{
+    c.make_ascii_uppercase()
 }

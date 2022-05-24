@@ -40,13 +40,3 @@
 
 // 	return original;
 // }
-
-
-pub extern "C" fn toupper(ch: u32) -> u32
-{
-	(ch > 96 && ch < 123) ? (ch - 32) : ch
-}
-
-pub extern "C" fn tolower(ch: u32) -> u32 {
-	(ch > 64 && ch < 91) ? (ch + 32) : ch
-}

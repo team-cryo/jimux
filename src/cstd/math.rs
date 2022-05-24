@@ -1,29 +1,29 @@
-pub extern "C" fn abs(const x: f32) -> f32
+pub extern "C" fn abs(x: f32) -> f32
 {
-    if x >= 0 {x} else {-x}
+    x.abs() 
 }
 
 pub extern "C" fn pow(base: f64, exp: f64) -> f64
 {
-    let mut sum = base;
-
-    for i in 0..exp {
-        sum = sum * base;
-    }
-
-    sum
+    base.pow(exp)
 }
 
 pub extern "C" fn sqrt(n: f64) -> f64
 {
-    let mut x: f64 = n;
-    let mut y: f64 = 1;
-    let e = 0.000001;
+    n.sqrt()
+}
 
-    while (x - y) > e {
-        x = (x + y) / 2;
-        y = n / x;
-    }
+pub extern "C" fn sin(n: f64) -> f64
+{
+    n.sin()
+}
 
-    x
+pub extern "C" fn cos(n: f64) -> f64
+{
+    n.cos()
+}
+
+pub extern "C" fn tan(n: f64) -> f64
+{
+    n.tan()
 }
