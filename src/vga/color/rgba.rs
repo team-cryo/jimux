@@ -1,5 +1,5 @@
-use super::{*, color_rgb::ColorRGB};
-use crate::number::{*, float::*};
+use super::{*, rgb::ColorRGB};
+use crate::number::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ColorRGBA<T>

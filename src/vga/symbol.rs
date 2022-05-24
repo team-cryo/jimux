@@ -1,10 +1,12 @@
 use super::color::Color;
+use super::style::Style;
 
 pub mod symbol_vga;
 
-pub trait Symbol<C>
-where C: Color
+pub trait Symbol<S, C>
+where S: Style<C>, C: Color
 {
     fn char(&self) -> u8;
-    fn color(&self) -> C;
+    fn style(&self) -> S;
+    fn overlay(&mut self, top: &Self);
 }

@@ -1,32 +1,9 @@
-use crate::number::Number;
 use crate::number::false_primitive::FalsePrimitive;
-use crate::number::float::Float;
-use crate::number::integer::unsigned_integer::{*, u2::u2, u6::u6, u24::u24};
+use crate::number::integer::unsigned::{u2::u2, u6::u6};
+use crate::vga::color::{Color, ColorHex};
+use crate::vga::color::vga::ColorVGA;
 
-use super::{Color, ColorHex};
-use super::color_vga::ColorVGA;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ColorRGB<T>
-where T: Number
-{
-    pub r: T,
-    pub g: T,
-    pub b: T
-}
-
-impl<T> ColorRGB<T>
-where T: Number, Self: Color
-{
-    pub fn new(r: T, g: T, b: T) -> Self
-    {
-        Self {
-            r,
-            g,
-            b
-        }
-    }
-}
+use super::ColorRGB;
 
 impl Color for ColorRGB<u2>
 {
@@ -65,24 +42,6 @@ impl ColorHex<u6> for ColorRGB<u2>
             r: u2::from(hex.prim() >> 4),
             g: u2::from((hex.prim() % (1 << 4)) >> 2),
             b: u2::from(hex.prim() % (1 << 2))
-        }
-    }
-}
-
-impl ColorHex<u24> for ColorRGB<u8>
-{
-    fn hex(&self) -> u24
-    {
-        u24::from((self.r as u32) << 16 + (self.g as u32) << 8 + (self.b as u32))
-    }
-
-    fn from_hex(hex: u24) -> Self
-    {
-        Self
-        {
-            r: (hex.prim() >> 16) as u8,
-            g: ((hex.prim() % (1 << 16)) >> 8) as u8,
-            b: (hex.prim() % (1 << 8)) as u8
         }
     }
 }

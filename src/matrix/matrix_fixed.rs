@@ -60,6 +60,22 @@ where
     {
         &mut self.data
     }
+
+    pub fn as_op(&self) -> MatrixFixed<Option<T>, ROWS, COLUMNS>
+    where T: Copy
+    {
+        let mut data: [Option<T>; ROWS*COLUMNS] = [None; ROWS*COLUMNS];
+
+        for (i, x) in self.data.iter().map(|x| Some(*x)).enumerate()
+        {
+            data[i] = x;
+        }
+        
+        MatrixFixed
+        {
+            data
+        }
+    }
 }
 
 impl<T, const ROWS: usize, const COLUMNS: usize> Matrix<T> for MatrixFixed<T, ROWS, COLUMNS>
@@ -75,14 +91,14 @@ where
         COLUMNS
     }
 
-    fn get(&self, c: usize, r: usize) -> Option<&T>
+    fn get(&self, r: usize, c: usize) -> Option<&T>
     {
-        self.data.get(c + r*COLUMNS)
+        self.data.get(r*COLUMNS + c)
     }
 
-    fn get_mut(&mut self, c: usize, r: usize) -> Option<&mut T>
+    fn get_mut(&mut self, r: usize, c: usize) -> Option<&mut T>
     {
-        self.data.get_mut(c + r*COLUMNS)
+        self.data.get_mut(r*COLUMNS + c)
     }
 
     fn iter(&self) -> Iter<T>
@@ -108,8 +124,8 @@ where
     type Output = T;
 
     fn index(&self, indices: (usize, usize)) -> &Self::Output {
-        let (c, r) = indices;
-        self.get_unchecked(c, r)
+        let (r, c) = indices;
+        self.get_unchecked(r, c)
     }
 }
 
@@ -118,8 +134,8 @@ where
     [T; ROWS*COLUMNS]: Sized
 {
     fn index_mut(&mut self, indices: (usize, usize)) -> &mut Self::Output {
-        let (c, r) = indices;
-        self.get_mut_unchecked(c, r)
+        let (r, c) = indices;
+        self.get_mut_unchecked(r, c)
     }
 }
 

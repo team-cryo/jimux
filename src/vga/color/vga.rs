@@ -1,9 +1,9 @@
 use core::array::IntoIter;
 
-use crate::number::integer::unsigned_integer::{*, u2::u2, u6::u6};
+use crate::number::integer::unsigned::{u1::u1, u2::u2, u4::u4, u6::u6};
 
 use super::{Color, ColorHex};
-use super::color_rgb::ColorRGB;
+use super::rgb::ColorRGB;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -34,7 +34,12 @@ impl ColorVGA
         ColorRGB::from_hex(self.hex())
     }
 
-    pub fn variants() -> [Self; 16]
+    pub const fn id(self) -> u4
+    {
+        u4::from(self as u8)
+    }
+
+    pub const fn variants() -> [Self; 16]
     {
         [
             Self::Black,
@@ -105,5 +110,29 @@ impl ColorHex<u6> for ColorVGA
             Self::Yellow => u6::from(62),
             Self::White => u6::from(63)
         }
+    }
+}
+
+impl Into<ColorRGB<u1>> for ColorVGA
+{
+    fn into(self) -> ColorRGB<u1>
+    {
+        self.to_rgb().rescale32()
+    }
+}
+
+impl Into<ColorRGB<u2>> for ColorVGA
+{
+    fn into(self) -> ColorRGB<u2>
+    {
+        self.to_rgb()
+    }
+}
+
+impl Into<ColorRGB<u8>> for ColorVGA
+{
+    fn into(self) -> ColorRGB<u8>
+    {
+        self.to_rgb().rescale32()
     }
 }

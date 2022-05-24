@@ -1,10 +1,10 @@
-use crate::number::integer::unsigned_integer::UnsignedInteger;
+use crate::number::integer::unsigned::UnsignedInteger;
 
-use self::color_vga::ColorVGA;
+use self::vga::ColorVGA;
 
-pub mod color_vga;
-pub mod color_rgb;
-pub mod color_rgba;
+pub mod vga;
+pub mod rgb;
+pub mod rgba;
 
 pub trait Color
 {

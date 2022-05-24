@@ -1,4 +1,5 @@
-use crate::vga::color::color_vga::ColorVGA;
+use crate::vga::color::vga::ColorVGA;
+use crate::vga::style::style_vga::StyleVGA;
 
 use super::*;
 
@@ -6,32 +7,38 @@ use super::*;
 pub struct SymbolVGA
 {
     char: u8,
-    color: ColorVGA
+    style: StyleVGA
 }
 
 impl SymbolVGA
 {
-    pub fn new<C>(char: u8, color: C) -> Self
-    where C: Color
+    pub fn new<S, C>(char: u8, style: S) -> Self
+    where S: Style<C>, C: Color
     {
         Self
         {
             char: char,
-            color: color.vga()
+            style: style.vga()
         }
     }
 }
 
-impl Symbol<ColorVGA> for SymbolVGA
+impl Symbol<StyleVGA, ColorVGA> for SymbolVGA
 {
     fn char(&self) -> u8
     {
         self.char
     }
 
-    fn color(&self) -> ColorVGA
+    fn style(&self) -> StyleVGA
     {
-        self.color
+        self.style
+    }
+
+    fn overlay(&mut self, top: &Self)
+    {
+        self.char = top.char;
+        self.style.overlay(&top.style)
     }
 }
 
@@ -39,6 +46,6 @@ impl Default for SymbolVGA
 {
     fn default() -> Self
     {
-        Self::new(' ' as u8, ColorVGA::default())
+        Self::new(' ' as u8, StyleVGA::default())
     }
 }
