@@ -15,6 +15,7 @@ pub struct ColorRGB<T>
     pub b: T
 }
 
+//TODO const impl
 impl<T> ColorRGB<T>
 where Self: Color
 {

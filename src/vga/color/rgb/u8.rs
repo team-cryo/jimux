@@ -5,6 +5,7 @@ use crate::vga::color::vga::ColorVGA;
 
 use super::{ColorRGB};
 
+//TODO const impl
 impl Color for ColorRGB<u8>
 {
     fn vga(&self) -> ColorVGA
@@ -13,6 +14,7 @@ impl Color for ColorRGB<u8>
     }
 }
 
+//TODO const impl
 impl ColorHex<u24> for ColorRGB<u8>
 {
     fn hex(&self) -> u24

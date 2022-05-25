@@ -5,7 +5,7 @@ use crate::vga::color::rgb::ColorRGB;
 use crate::vga::color::vga::ColorVGA;
 use crate::number::integer::unsigned::u1::u1;
 
-use super::Style;
+use super::{Style, Overlay};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StyleVGA
@@ -16,6 +16,7 @@ pub struct StyleVGA
 
 impl StyleVGA
 {
+    //TODO const impl
     pub fn new(color: ColorVGA, background: Option<ColorRGB<u1>>, blink: bool) -> Self
     {
         let mut data = color as u8;
@@ -39,26 +40,32 @@ impl StyleVGA
         }
     }
 
-    pub fn as_byte(&self) -> u8
+    pub const fn as_byte(&self) -> u8
     {
         self.data
     }
 
-    pub fn blink(&self) -> bool
+    pub const fn blink(&self) -> bool
     {
         self.data >> 7 != 0
     }
 
-    pub fn opaque(&self) -> bool
+    pub const fn opaque(&self) -> bool
     {
         self.opaque
     }
 
-    pub fn color(&self) -> ColorVGA
+    pub const fn color(&self) -> ColorVGA
     {
         ColorVGA::variants()[(self.data % 16) as usize]
     }
 
+    pub fn with_color(&self, color: ColorVGA) -> Self
+    {
+        Self::new(color, self.background(), self.blink())
+    }
+
+    //TODO const impl
     pub fn background(&self) -> Option<ColorRGB<u1>>
     {
         match self.opaque
@@ -69,7 +76,7 @@ impl StyleVGA
     }
 }
 
-impl From<ColorVGA> for StyleVGA
+impl const From<ColorVGA> for StyleVGA
 {
     fn from(color: ColorVGA) -> Self
     {
@@ -81,19 +88,23 @@ impl From<ColorVGA> for StyleVGA
     }
 }
 
-impl Style<ColorVGA> for StyleVGA
+impl const Style<ColorVGA> for StyleVGA
 {
     fn vga(self) -> Self
     {
         self
     }
+}
 
+impl Overlay for StyleVGA
+{
     fn overlay(&mut self, top: &Self)
     {
         *self = Self::new(top.color(), top.background().or(self.background()), top.blink())
     }
 }
 
+//TODO const impl
 impl Default for StyleVGA
 {
     fn default() -> Self

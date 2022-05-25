@@ -1,4 +1,5 @@
 use crate::vga::color::vga::ColorVGA;
+use crate::vga::style::Overlay;
 use crate::vga::style::style_vga::StyleVGA;
 
 use super::*;
@@ -12,8 +13,8 @@ pub struct SymbolVGA
 
 impl SymbolVGA
 {
-    pub fn new<S, C>(char: u8, style: S) -> Self
-    where S: Style<C>, C: Color
+    pub const fn new<S, C>(char: u8, style: S) -> Self
+    where S: ~const Style<C>, C: Color
     {
         Self
         {

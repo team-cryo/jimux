@@ -12,7 +12,7 @@ where T: Number
 impl<T> ColorRGBA<T>
 where ColorRGB<T>: Color, T: Number
 {
-    pub fn new(r: T, g: T, b: T, a: T) -> Self
+    pub const fn new(r: T, g: T, b: T, a: T) -> Self
     {
         Self
         {
@@ -26,6 +26,7 @@ where ColorRGB<T>: Color, T: Number
     }
 }
 
+//TODO const impl
 impl<T> Color for ColorRGBA<T>
 where ColorRGB<T>: Color, T: Number
 {

@@ -1,4 +1,8 @@
+use core::fmt;
+
 use super::matrix::{*, matrix_fixed::*};
+use self::color::Color;
+use self::style::Style;
 use self::symbol::{*, symbol_vga::*};
 use self::style::style_vga::StyleVGA;
 
@@ -10,15 +14,15 @@ pub mod charset;
 pub const ROWS: usize = 25;
 pub const COLUMNS: usize = 80;
 
-<<<<<<< Updated upstream
-/**
- * A VGABuffer with double buffering support.
- */
-
-pub struct VGABuffer
-=======
+///
+/// A VGA buffer with double buffering support.
+/// 
+/// ## Initialization
+/// ```
+/// let mut vga = VGACanvas::new(0xb8000 as *mut u8);
+/// ```
+///
 pub struct VGACanvas
->>>>>>> Stashed changes
 {
     vga_buffer_ptr: *mut u8,
     buffer: MatrixFixed<SymbolVGA, ROWS, COLUMNS>,
@@ -27,17 +31,13 @@ pub struct VGACanvas
 
 impl VGACanvas
 {
+    //TODO const impl
     pub fn new(vga_buffer_ptr: *mut u8) -> Self
     {
         Self
         {
-<<<<<<< Updated upstream
             vga_buffer_ptr,
-            buffer: MatrixFixed::repeat(SymbolVGA::new(' ' as u8, ColorVGA::Black)),
-=======
-            pnt,
             buffer: MatrixFixed::repeat(SymbolVGA::new(' ' as u8, StyleVGA::default())),
->>>>>>> Stashed changes
             marker: 0
         }
     }
@@ -134,7 +134,8 @@ impl VGACanvas
         self.put_text(string, StyleVGA::default())
     }
 
-    pub fn put_text(&mut self, string: &[u8], style: StyleVGA)
+    pub fn put_text<S, C>(&mut self, string: &[u8], style: S)
+    where S: ~const Style<C> + Copy, C: Color
     {
         let serial = self.buffer.serial_mut();
 
@@ -175,17 +176,17 @@ impl VGACanvas
         self.set_marker(self.marker_pos().0 + 1, 0);
     }
 
+    pub fn indent(&mut self, spaces: usize)
+    {
+        self.set_marker(self.marker_pos().0, self.marker_pos().1 + spaces);
+    }
+
     pub fn render(&mut self)
     {
         for (i, &sym) in self.buffer.iter().enumerate() {
             unsafe {
-<<<<<<< Updated upstream
                 *self.vga_buffer_ptr.offset(i as isize * 2) = sym.char() as u8;
-                *self.vga_buffer_ptr.offset(i as isize * 2 + 1) = sym.color() as u8;
-=======
-                *self.pnt.offset(i as isize * 2) = sym.char() as u8;
-                *self.pnt.offset(i as isize * 2 + 1) = sym.style().as_byte();
->>>>>>> Stashed changes
+                *self.vga_buffer_ptr.offset(i as isize * 2 + 1) = sym.style().as_byte();
             }
         }
     }
@@ -210,7 +211,8 @@ pub struct VGABufferWriter
 
 impl VGABufferWriter
 {
-    fn write_line() {
+    fn write_line()
+    {
         
     }
 }
@@ -218,13 +220,9 @@ impl VGABufferWriter
 #[macro_export]
 macro_rules! print {
     ($($arg: tt)*) => {
-        vga::_print(format_args!($($arg)*));
+        let mut vga = VGACanvas::new(0xb8000 as *mut u8);
+        vga.put_text(&format_args!($($arg)*).as_str().unwrap().as_bytes(), StyleVGA::default());
+        vga.new_line();
+        vga.render();
     }
-}
-
-pub fn _print(args: fmt::Arguments) {
-    let mut vga_buffer = VGABuffer::new(0xb8000 as *mut u8);
-    vga_buffer.put_text(&args.as_str().unwrap().as_bytes(), ColorVGA::White);
-    vga_buffer.new_line();
-    vga_buffer.render();
 }

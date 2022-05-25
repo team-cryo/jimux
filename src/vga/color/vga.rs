@@ -1,6 +1,8 @@
 use core::array::IntoIter;
 
 use crate::number::integer::unsigned::{u1::u1, u2::u2, u4::u4, u6::u6};
+use crate::vga::style::{Style, Overlay};
+use crate::vga::style::style_vga::StyleVGA;
 
 use super::{Color, ColorHex};
 use super::rgb::ColorRGB;
@@ -67,7 +69,7 @@ impl ColorVGA
     }
 }
 
-impl Default for ColorVGA
+impl const Default for ColorVGA
 {
     fn default() -> Self
     {
@@ -75,11 +77,11 @@ impl Default for ColorVGA
     }
 }
 
-impl Color for ColorVGA
+impl const Color for ColorVGA
 {
     fn vga(&self) -> Self
     {
-        self.clone()
+        *self
     }
 }
 
@@ -110,6 +112,22 @@ impl ColorHex<u6> for ColorVGA
             Self::Yellow => u6::from(62),
             Self::White => u6::from(63)
         }
+    }
+}
+
+impl const Style<Self> for ColorVGA
+{
+    fn vga(self) -> StyleVGA
+    {
+        StyleVGA::from(self)
+    }
+}
+
+impl Overlay for ColorVGA
+{
+    fn overlay(&mut self, top: &Self)
+    {
+        *self = *top;
     }
 }
 

@@ -7,93 +7,90 @@
 #![feature(const_trait_impl)]
 #![feature(slice_as_chunks)]
 #![feature(split_array)]
-<<<<<<< Updated upstream
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
-=======
 #![feature(panic_info_message)]
 #![feature(mixed_integer_ops)]
+#![feature(never_type)]
 
->>>>>>> Stashed changes
 #![allow(dead_code)]
 
 use core::panic::PanicInfo;
 
-use alloc::string::ToString;
-
-use self::matrix::Matrix;
 use self::matrix::matrix_fixed::MatrixFixed;
-use self::number::integer::unsigned::u1::u1;
 use self::vga::VGACanvas;
-use self::vga::charset::Charset;
-//use self::vga::charset::Charset;
-use self::vga::color::rgb::ColorRGB;
+use self::vga::charset::CharsetVGA;
 use self::vga::color::vga::ColorVGA;
 use self::vga::style::style_vga::StyleVGA;
 use self::vga::symbol::symbol_vga::SymbolVGA;
 
-mod std;
+//mod std;
 mod number;
 mod vga;
 mod matrix;
 mod math;
 
-static HELLO: &[u8] = b"Hello World!";
+const HELLO: &[u8] = b"Hello World!";
 
 #[no_mangle]
 pub extern "C" fn _start() -> !
 {
-    let mut vga = VGACanvas::new(0xb8000 as *mut u8);
-
-<<<<<<< Updated upstream
-    // vga::print("Hello World");
     print!("Hello World");
 
-    // vga_buffer.fill(SymbolVGA::new('r' as u8, ColorVGA::Red));
-=======
-    let background_color: ColorRGB<u1> = ColorVGA::Red.into();
->>>>>>> Stashed changes
+    let mut vga = VGACanvas::new(0xb8000 as *mut u8);
 
-    vga.fill(SymbolVGA::new(39, StyleVGA::new(ColorVGA::Red, Some(background_color), true)));
-
-<<<<<<< Updated upstream
-    // vga_buffer.set_marker(20, 10);
-    // vga_buffer.put_text(&HELLO, ColorVGA::White);
-    // vga_buffer.new_line();
-    // vga_buffer.put_text(&HELLO, ColorVGA::White);
-    // vga_buffer.render();
-=======
-    vga.put_plain_text(&HELLO);
-
-    let mut square: MatrixFixed<SymbolVGA, 10, 40> = MatrixFixed::repeat(
-        SymbolVGA::new('~' as u8, StyleVGA::new(ColorVGA::Yellow, Some(ColorVGA::White.into()), false))
+    vga.fill(SymbolVGA::new('r' as u8, ColorVGA::Red));
+    
+    vga.fill(SymbolVGA::new(CharsetVGA::TileLight as u8, ColorVGA::LightBlue));
+    
+    let square: MatrixFixed<SymbolVGA, {vga::ROWS - 3}, {vga::COLUMNS - 2}> = MatrixFixed::repeat(
+        SymbolVGA::new(CharsetVGA::FullBlock as u8, StyleVGA::new(ColorVGA::LightGray, Some(ColorVGA::Pink.into()), false))
     );
 
-    let cross: SymbolVGA = SymbolVGA::new('x' as u8, StyleVGA::new(ColorVGA::Yellow, Some(ColorVGA::Cyan.into()), false));
-
-    square[(1, 1)] = cross;
-
-    vga.set_marker(0, 0);
-    vga.put_symbol(&cross);
-
-    vga.set_marker(10, 5);
-    //assert_eq!(vga.marker_pos(), (10, 0));
-
+    vga.set_marker(2, 1);
     vga.put_image(&square);
 
-    vga.set_marker(10, 20);
-    vga.put_text(&HELLO, StyleVGA::new(ColorVGA::Blue, None, true));
-    vga.new_line();
-    vga.put_text(&HELLO, StyleVGA::new(ColorVGA::LightRed, None, true));
+    let toolbar_style: StyleVGA = StyleVGA::new(ColorVGA::White, Some(ColorVGA::DarkGray.into()), true);
+    let toolbar: MatrixFixed<SymbolVGA, 1, {vga::COLUMNS}> = MatrixFixed::repeat(
+        SymbolVGA::new(' ' as u8, toolbar_style)
+    );
+    
+    vga.set_marker(0, 0);
+    vga.put_image(&toolbar);
 
     vga.set_marker(0, 0);
+    vga.put_text(b" ", toolbar_style.with_color(ColorVGA::DarkGray)); //removes blinking underline
+    vga.put_text(b"jimux 1.0", toolbar_style);
+
+    vga.set_marker(21, 2);
+    vga.put_text(&HELLO, ColorVGA::White);
+    vga.new_line();
+    vga.indent(2);
+    vga.put_text(&HELLO, ColorVGA::White);
+    vga.render();
+    vga.put_plain_text(&HELLO);
+
+    let mut square: MatrixFixed<SymbolVGA, 10, 10> = MatrixFixed::repeat(
+        SymbolVGA::new('~' as u8, StyleVGA::new(ColorVGA::Yellow, Some(ColorVGA::White.into()), false))
+    );
+    square[(1, 1)] = SymbolVGA::new(CharsetVGA::Smiley as u8, StyleVGA::new(ColorVGA::Yellow, Some(ColorVGA::Cyan.into()), false));
+
+    vga.set_marker(10, 50);
+    vga.put_image(&square);
+
+    vga.set_marker(12, 20);
+    vga.put_text(&HELLO, StyleVGA::new(ColorVGA::Blue, None, true));
+    vga.new_line();
+    vga.indent(20);
+    vga.put_text(&HELLO, StyleVGA::new(ColorVGA::LightRed, None, true));
+
+    vga.set_marker(3, 2);
     vga.put_image(&vga::char_table());
 
-    vga.set_marker(23, 0);
-    vga.put_symbol(&SymbolVGA::new(Charset::AE as u8, StyleVGA::default()));
+    vga.set_marker(3, vga::COLUMNS - 3);
+    vga.put_symbol(&SymbolVGA::new(CharsetVGA::AE as u8, StyleVGA::default()));
 
     vga.render();
->>>>>>> Stashed changes
 
     loop {}
 }
@@ -113,7 +110,19 @@ fn hello_world(vga_buffer: *mut u8)
 fn panic(_info: &PanicInfo) -> ! {
     let mut vga = VGACanvas::new(0xb8000 as *mut u8);
     vga.set_marker(0, 0);
-    vga.put_plain_text(_info.message().into());
+
+    vga.put_plain_text(b"Panic!: ");
+
+    match _info.message()
+    {
+        Some(message) => match message.as_str()
+        {
+            Some(str) => vga.put_plain_text(str.as_bytes()),
+            None => vga.put_plain_text(b"invalid message")
+        },
+        None => vga.put_plain_text(b"no message")
+    }
+
     vga.render();
 
     loop {}

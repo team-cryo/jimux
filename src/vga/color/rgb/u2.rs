@@ -5,29 +5,35 @@ use crate::vga::color::vga::ColorVGA;
 
 use super::ColorRGB;
 
+//TODO const impl
 impl Color for ColorRGB<u2>
 {
     fn vga(&self) -> ColorVGA
     {
-        let mut select: ColorVGA = ColorVGA::Black;
-        let mut ds: u16 = u16::MAX; //only 10 bits used here
-        for c0 in ColorVGA::iter()
+        //10 bit diffpow2
+        ColorVGA::iter().fold((u16::MAX, ColorVGA::Black), |acc, c0|
         {
             let c = c0.to_rgb();
+
             let dr: u16 = (c.r.prim() as i8 - self.r.prim() as i8).abs() as u16;
             let dg: u16 = (c.g.prim() as i8 - self.g.prim() as i8).abs() as u16;
             let db: u16 = (c.b.prim() as i8 - self.b.prim() as i8).abs() as u16;
+
             let d: u16 = dr*dr + dg*dg + db*db;
-            if d < ds
+
+            if d < acc.0
             {
-                select = c0;
-                ds = d;
+                (d, c0)
             }
-        }
-        select
+            else
+            {
+                acc
+            }
+        }).1
     }
 }
 
+//TODO const impl
 impl ColorHex<u6> for ColorRGB<u2>
 {
     fn hex(&self) -> u6

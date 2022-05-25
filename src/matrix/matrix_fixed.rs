@@ -20,7 +20,7 @@ where
         Self::repeat(Default::default())
     }
 
-    pub fn repeat(repeat: T) -> Self
+    pub const fn repeat(repeat: T) -> Self
     where T: Copy
     {
         Self
@@ -51,7 +51,7 @@ where
         }
     }
 
-    pub fn serial(&self) -> &[T; ROWS*COLUMNS]
+    pub const fn serial(&self) -> &[T; ROWS*COLUMNS]
     {
         &self.data
     }
