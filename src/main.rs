@@ -92,7 +92,46 @@ pub extern "C" fn _start() -> !
 
     vga.render();
 
-    loop {}
+    //dette er noe jeg har gjort for å demonstrere canvas, kan bare fjernes om loopen skal brukes til noe annet
+    let still_image = vga.capture();
+    let mut pos: (usize, usize) = (vga::ROWS/2, vga::COLUMNS/2);
+    let mut v: (isize, isize) = (1, 1);
+    let bounce = b"<dvd>";
+    let mut frame: u128 = 0;
+    const FRAME_SKIP: u128 = 32;
+    let colors = ColorVGA::variants();
+    
+    loop
+    {
+        if frame % FRAME_SKIP == 0
+        {
+            vga.fill_frame(still_image.clone());
+            vga.set_marker(pos.0, pos.1);
+            vga.put_text(bounce, colors[(frame/FRAME_SKIP % 16) as usize]);
+
+            if pos.0 <= 0
+            {
+                v.0 = 1;
+            }
+            else if pos.0 + 1 >= vga::ROWS
+            {
+                v.0 = -1;
+            }
+            if pos.1 <= 0
+            {
+                v.1 = 1
+            }
+            else if pos.1 + bounce.len() >= vga::COLUMNS
+            {
+                v.1 = -1
+            }
+            pos.0 = (pos.0 as isize + v.0) as usize;
+            pos.1 = (pos.1 as isize + v.1) as usize;
+        }
+
+        vga.render();
+        frame += 1;
+    }
 }
 
 fn hello_world(vga_buffer: *mut u8)

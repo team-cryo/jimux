@@ -52,6 +52,11 @@ impl VGACanvas
         self.buffer = image;
     }
 
+    pub fn capture(&self) -> MatrixFixed<SymbolVGA, ROWS, COLUMNS>
+    {
+        self.buffer.clone()
+    }
+
     pub fn wipe(&mut self)
     {
         self.fill_frame(MatrixFixed::new())
